@@ -1,0 +1,8 @@
+#!/bin/sh
+#!/bin/bash
+
+REPO_PATH=$(git rev-parse --show-toplevel)
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+COMMIT_HASH=$(git rev-parse HEAD)
+
+nohup zoro log commit -p "$REPO_PATH" -b "$BRANCH" -c "$COMMIT_HASH" > /dev/null 2>&1 & disown

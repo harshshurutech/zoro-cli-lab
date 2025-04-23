@@ -1,0 +1,4 @@
+#!/bin/sh
+# ZORO_HOOK:START
+"--local/zoro-hooks/pre-push"
+# ZORO_HOOK:END

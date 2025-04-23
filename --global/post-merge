@@ -1,0 +1,4 @@
+#!/bin/sh
+# ZORO_HOOK:START
+"--global/zoro-hooks/post-merge"
+# ZORO_HOOK:END

@@ -1,0 +1,4 @@
+#!/bin/sh
+# ZORO_HOOK:START
+"--local/zoro-hooks/post-commit"
+# ZORO_HOOK:END

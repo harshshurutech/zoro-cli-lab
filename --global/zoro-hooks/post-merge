@@ -1,0 +1,10 @@
+#!/bin/sh
+#!/bin/bash
+
+REPO_PATH=$(git rev-parse --show-toplevel)
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+REFLOG_ENTRY=$(git reflog -1)
+PREV_HEAD=$(git rev-parse HEAD@{1})
+NEW_HEAD=$(git rev-parse HEAD)
+
+nohup zoro log pull -p "$REPO_PATH" -b "$BRANCH" -r "$REFLOG_ENTRY" -o "$PREV_HEAD" -n "$NEW_HEAD" > /dev/null 2>&1 & disown

@@ -1,0 +1,36 @@
+#!/bin/sh
+#!/bin/bash
+
+REPO_PATH=$(git rev-parse --show-toplevel)
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+while read -r LOCAL_REF LOCAL_COMMIT REMOTE_REF REMOTE_COMMIT; do
+    # Ensure we're dealing with a branch push (not a tag)
+    if [[ "$LOCAL_REF" != refs/heads/* ]]; then
+        continue
+    fi
+
+    # Correctly determine OLD_COMMIT
+    if [ "$REMOTE_COMMIT" == "0000000000000000000000000000000000000000" ]; then
+        # If remote commit is empty, it's a new branch, use the first commit
+        OLD_COMMIT=$(git rev-list --max-parents=0 HEAD)
+    else
+        # Get the previous commit before the push
+        OLD_COMMIT="$REMOTE_COMMIT"
+    fi
+
+    NEW_COMMIT="$LOCAL_COMMIT"
+
+    # Determine if it's a force push
+    IS_FORCE_PUSH=false
+    if ! git merge-base --is-ancestor "$OLD_COMMIT" "$NEW_COMMIT"; then
+        IS_FORCE_PUSH=true
+    fi
+
+    # Call the CLI in the background without blocking Git
+    if [[ "$IS_FORCE_PUSH" == "true" ]]; then
+        nohup zoro log push -p "$REPO_PATH" -b "$BRANCH" -i "$OLD_COMMIT" -f "$NEW_COMMIT" -F > /dev/null 2>&1 & disown
+    else
+        nohup zoro log push -p "$REPO_PATH" -b "$BRANCH" -i "$OLD_COMMIT" -f "$NEW_COMMIT" > /dev/null 2>&1 & disown
+    fi
+done
